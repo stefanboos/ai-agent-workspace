@@ -1,3 +1,9 @@
+---
+name: memory-to-docs
+description: >
+  Use when learnings in the memory bank should be preserved beyond the current
+  development focus by moving them to more permanent documentation.
+---
 # Update Documentation from Memory Bank
 
 ## Your Role
@@ -40,7 +46,5 @@ Ask the user questions, one after another, until you can create a solid plan to 
 
 The following rules apply and might be helpful during your analysis:
 
-- 330-git-usage.mdc
 - 500-cline-memory-bank.mdc
-- 510-memory-bank-branches.mdc (if that file exists)
 - 600-documentation-strategy.mdc
