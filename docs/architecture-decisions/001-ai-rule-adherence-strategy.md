@@ -33,6 +33,7 @@ The selection of a solution will be guided by the following key principles, prio
 6.  **Do Nothing (Accept the Status Quo)**: Make no changes and continue with the current manual review and correction process. See [Detailed Analysis](#6-do-nothing-accept-the-status-quo).
 7.  **Structured Manual Workarounds**: Formalize manual processes like re-pasting rules or using checklists to improve compliance. See [Detailed Analysis](#7-structured-manual-workarounds).
 8.  **Buy a Commercial Off-The-Shelf (COTS) Product**: Research and purchase an existing product that solves the problem. See [Detailed Analysis](#8-buy-a-commercial-off-the-shelf-cots-product).
+9.  **Agent Skills (Automatic Rule Re-Enforcement)**: An open standard for on-demand skill loading where rules and workflows are packaged as `SKILL.md` files that agents discover and load automatically at the right moment. See [Detailed Analysis](#9-agent-skills-automatic-rule-re-enforcement).
 
 ## Options Comparison Matrix
 
@@ -46,7 +47,7 @@ The following table provides a high-level comparison of the considered options a
 
 | | Effectiveness | 🚀 Rapid Implementation | 🛠️ Low Maintenance | 🧘 Minimal Disruption |
 | :--- | :---: | :---: | :---: | :---: |
-| -> **Context-Aware Rule Reinforcement** | 3 | ✅ | ✅ | ✅ |
+| **Context-Aware Rule Reinforcement** | 3 | ✅ | ✅ | ✅ |
 | **Hybrid Memory Architecture** | 4 | ❌ | ❌ | ✅ |
 | **Intelligent Rule Validation Pipeline** | 3 | ❌ | ⚠️ | ❌ |
 | **AI-Assisted Memory Bank Enforcement** | 2 | ⚠️ | ⚠️ | ❌ |
@@ -54,36 +55,44 @@ The following table provides a high-level comparison of the considered options a
 | **Do Nothing** | 0 | ✅ | ✅ | ✅ |
 | **Structured Manual Workarounds** | 2 | ✅ | ✅ | ⚠️ |
 | **Buy a COTS Product** | 2 | ⚠️ | ✅ | ⚠️ |
+| -> **Agent Skills** | 4 | ✅ | ✅ | ✅ |
 
 **Legend**: ✅ = Positive Alignment, ⚠️ = Neutral/Mixed Alignment, ❌ = Negative Alignment
 
 ## Decision Outcome and Consequences
 
-**Chosen Option:** [1. Context-Aware Rule Reinforcement](#1-context-aware-rule-reinforcement)
+**Chosen Option:** [9. Agent Skills (Automatic Rule Re-Enforcement)](#9-agent-skills-automatic-rule-re-enforcement)
 
 ### Rationale
 
-Initial trials with a Commercial Off-The-Shelf (COTS) product (Cursor IDE) revealed that its "always apply" feature was insufficient to prevent AI rule degradation over long sessions. While the IDE provides a useful baseline context, the core problem of the agent "forgetting" rules persisted as the session context grew.
-The truly effective solution was found to be a manual implementation of **Context-Aware Rule Reinforcement**. This approach uses a structured, prompt-driven workflow where the developer explicitly instructs the agent to read and apply the relevant rules at critical junctures of the development process (e.g., analysis, implementation, review).
+This decision evolved through two validated iterations before arriving at the current solution.
 
-This strategy directly and effectively addresses the root causes of rule degradation by:
-- ✅ **Refreshing the Context**: Systematically re-introducing the rules into the agent's active context window.
-- ✅ **Focusing Attention**: Directing the agent's attention to the rules when it matters most.
+**Iteration 1 — COTS (Cursor IDE `always_apply`)**: Initial trials showed that always-on rule injection provides a useful baseline but is insufficient for long sessions. Rules loaded at session start are gradually diluted as context grows.
 
-The Cursor IDE remains a valuable component of the workflow, providing a good development environment and initial rule loading, but the prompt-driven reinforcement is the key to maintaining long-term compliance.
+**Iteration 2 — Manual Context-Aware Rule Reinforcement**: A structured prompt library proved genuinely effective at re-introducing rules at critical workflow moments. This eliminated the worst violations and reduced cognitive load significantly. However, it introduced a new dependency: the developer must remember to invoke the right prompt at the right time. Over time, this discipline erodes, and the agentic tooling landscape evolved faster than the prompt library could be maintained.
+
+**Iteration 3 — Agent Skills**: The Agent Skills open standard (agentskills.io) automates exactly what the manual prompt library achieved. Rules and workflows are packaged as `SKILL.md` files. The agent loads them on-demand — either automatically when its description matches the current task, or on explicit invocation via `/skill-name`. Two properties make this structurally superior to previous approaches:
+
+- ✅ **On-demand loading**: Skill content enters the context only when needed, avoiding the dilution that defeats always-on injection.
+- ✅ **Compaction persistence**: After context compaction, Claude Code re-attaches the most recently invoked skills, so rules survive long sessions without manual re-introduction.
+
+This repository already validates the approach in practice: skills such as `/commit`, `/memory-update`, `/memory-create`, and `/memory-to-docs` package the exact workflows that were previously maintained as a manual prompt library.
+
+The standard is tool-agnostic (adopted by Claude Code, Cursor, GitHub Copilot, Gemini CLI, and 30+ others), which removes the vendor lock-in risk identified in Iteration 1.
 
 ### Consequences
 
 - **Positive**:
-  - The primary problem of AI rule degradation is effectively managed, leading to more consistent and reliable agent behavior.
-  - The developer's cognitive load is significantly reduced, as the structured prompts ensure compliance without constant manual monitoring.
-  - The overall quality and consistency of outputs have demonstrably improved.
+  - Rule re-enforcement is fully automatic — no developer discipline required to invoke the right prompt.
+  - Skills survive context compaction, directly addressing the root cause of long-session degradation.
+  - The same skill files work across multiple agent tools, eliminating vendor lock-in.
+  - Packaging workflows as skills is lightweight and incremental: one `SKILL.md` file per workflow.
 - **Negative**:
-  - The current implementation of the prompt-driven workflow is manual and relies on the developer's discipline to apply the correct prompts.
-  - This creates a new form of cognitive load—remembering to use the prompt library—though it is significantly less burdensome than constant manual review.
+  - Skill descriptions must be written carefully so the agent knows when to auto-invoke them. Vague descriptions lead to missed or unnecessary invocations.
+  - After compaction, only the first 5,000 tokens of each skill are re-attached, with a shared budget of 25,000 tokens across all skills. Very large skill sets may require prioritization.
 - **Risks**:
-  - The effectiveness of the workflow is tied to the quality and maintenance of the prompt library. Outdated or poorly written prompts could lead to inconsistent results.
-  - There is a risk of developer fatigue in manually applying the prompts, which could be mitigated in the future by exploring automation opportunities.
+  - The quality of rule enforcement depends on the quality of the `SKILL.md` content. Skills still need to be authored and occasionally reviewed.
+  - As the skills ecosystem matures, the format or tooling may evolve. The open standard mitigates this, but migrations may occasionally be needed.
 
 ## Links
 
@@ -222,6 +231,22 @@ The core problem of AI rule degradation stems from three fundamental limitations
     - The insufficiency of the feature is mitigated by using it in combination with the **Context-Aware Rule Reinforcement** strategy (i.e., the prompt-driven workflow).
     - The vendor lock-in is mitigated by the user's acceptance of having one primary automated tool and a manual process for others.
     - The workflow migration effort can be minimized by leveraging Cursor's compatibility with VS Code extensions and settings.
+
+### 9. Agent Skills (Automatic Rule Re-Enforcement)
+
+- **Description**: Rules, checklists, and workflow playbooks are packaged as `SKILL.md` files in a `.claude/skills/` directory (or the equivalent for other tools). The agent reads skill `description` fields at session start and automatically loads the full content when the current task matches. Developers can also invoke skills directly with `/skill-name`. After context compaction, Claude Code re-attaches the most recently invoked skills automatically.
+- **Pros**:
+    - ✅ **Automatic invocation**: No developer discipline required — the agent decides when a skill is relevant based on the `description` field.
+    - ✅ **On-demand loading**: Skill content is not in the context until needed, so it does not contribute to dilution or context waste.
+    - ✅ **Compaction persistence**: Re-attaching invoked skills after compaction directly addresses long-session rule degradation at the infrastructure level.
+    - ✅ **Tool-agnostic**: The Agent Skills open standard (agentskills.io) is supported by Claude Code, Cursor, GitHub Copilot, Gemini CLI, and 30+ other tools. Skills written for one tool are portable.
+    - ✅ **Aligns with all decision drivers**: Skills are trivial to create (rapid implementation), require no ongoing infrastructure (low maintenance), and integrate silently into the workflow (minimal disruption).
+- **Cons**:
+    - ❌ **Description quality matters**: If a skill's description does not match how the developer naturally phrases requests, the agent will miss or over-trigger it.
+    - ❌ **Compaction token budget**: Re-attached skills share a 25,000-token budget. Large or numerous skills may not all survive compaction.
+- **Mitigations**:
+    - Write descriptions that front-load the key use case and include natural trigger phrases. Test by asking "What skills are available?" and reviewing whether the description would match common requests.
+    - Keep individual `SKILL.md` files focused and under 500 lines. Move detailed reference material to supporting files referenced from the skill.
 
 ### Glossary
 
