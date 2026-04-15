@@ -1,10 +1,10 @@
 ---
-name: update-memory-bank
+name: memory-update
 description: >
-  Keeps the memory bank current for the active feature branch. Invoke after
-  completing significant milestones, making key decisions, or before ending a
-  session. The VM may be destroyed at any time — the memory bank is the sole
-  continuity mechanism for the next agent session.
+  Update memory bank files to keep them accurate for the active development.
+  Use when significant milestones or key decisions are made, or before ending
+  a session. The VM may be destroyed at any time — the memory bank is the
+  sole continuity mechanism for the next agent session.
 ---
 
 The virtual machine may be destroyed at any time. The memory bank must always
