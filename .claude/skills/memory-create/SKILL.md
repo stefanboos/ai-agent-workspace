@@ -1,5 +1,5 @@
 ---
-name: create-memory-bank
+name: memory-create
 description: >
   Creates a focused memory bank for the current project iteration using scope,
   git history, and tests. Use when no memory bank exists.

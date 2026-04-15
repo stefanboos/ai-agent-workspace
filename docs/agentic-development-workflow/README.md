@@ -1,17 +1,6 @@
 # Cursor Commands
 
-## create-memory-bank - Create Memory Bank for Existing Project
-
-**Goal**: Create the initial memory bank.
-**Prompt**: [create-memory-bank-from-existing-project.md](/.cursor/commands/create-memory-bank-from-existing-project.md)
-
-In **ask mode**, the LLM will analyze the project and ask questions until it can create the initial memory bank.
-
-Switch to **plan or agent mode** to acutally write the memory bank.
-
-Focus on writing the memory bank. Architectural decisions should become tasks in the memory bank.
-
-### define-next-increment - Identify Goal of next Iteration
+## define-next-increment - Identify Goal of next Iteration
 
 **Goal**: To analyze the goal of the next iteration.
 **Prompt**: [define-next-increment.md](/.cursor/commands/define-next-increment.md)
