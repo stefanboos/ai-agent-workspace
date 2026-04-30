@@ -36,6 +36,7 @@ if [ -z "$1" ]; then
 fi
 
 REMOTE_HOST="$1"
+REMOTE_PORT=8022
 REMOTE_HOST_NAME="agent"
 REMOTE_USER=galadriel
 REMOTE_TARGET="/home/galadriel/Documents"
@@ -59,12 +60,12 @@ done
 
 echo "===== Removing repositories from remote ====="
 echo "Copying delete-on-remote.sh script to remote ..."
-rsync -az --delete --delete-during "$SCRIPT_DIR/delete-on-remote.sh" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET"
+scp -P $REMOTE_PORT "$SCRIPT_DIR/delete-on-remote.sh" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET"
 
 echo "Running delete-on-remote.sh script on remote ..."
 echo ""
-ssh "$REMOTE_USER@$REMOTE_HOST" "cd $REMOTE_TARGET && ./delete-on-remote.sh"
+ssh -p $REMOTE_PORT "$REMOTE_USER@$REMOTE_HOST" "cd $REMOTE_TARGET && ./delete-on-remote.sh"
 
 echo "===== Cleaning up on remote ====="
 echo "Removing shell scripts ..."
-ssh "$REMOTE_USER@$REMOTE_HOST" "rm -vf $REMOTE_TARGET/clone-on-remote.sh $REMOTE_TARGET/delete-on-remote.sh"
+ssh -p $REMOTE_PORT "$REMOTE_USER@$REMOTE_HOST" "rm -vf $REMOTE_TARGET/clone-on-remote.sh $REMOTE_TARGET/delete-on-remote.sh"
