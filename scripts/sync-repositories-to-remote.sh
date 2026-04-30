@@ -9,16 +9,17 @@
 #
 # Usage
 #
-# ./create-remote-repository.sh HOST_IP_ADDRESS
+# ./sync-repositories-to-remote.sh HOST_IP_ADDRESS HOST_SSH_PORT
 #
 # Parameters
 #
 #   HOST_IP_ADDRESS  The IP address of the remote host to which the repositories
 #                    are synced.
+#   HOST_SSH_PORT    The SSH port of the remote host.
 #
 # Example
 #
-#   pushd ~/source/ai-agent-workspace/scripts && ./sync-repositories-to-remote.sh "$IPV4_ADDRESS"; popd
+#   pushd ~/source/ai-agent-workspace/scripts && ./sync-repositories-to-remote.sh "$IPV4_ADDRESS" "8022"; popd
 #
 set -eEufo pipefail
 
@@ -35,8 +36,14 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+# For remote port, the default is 22
+if [ -z "$2" ]; then
+    REMOTE_PORT=22
+else
+    REMOTE_PORT="$2"
+fi
+
 REMOTE_HOST="$1"
-REMOTE_PORT=8022
 REMOTE_HOST_NAME="agent"
 REMOTE_USER=galadriel
 REMOTE_TARGET="/home/galadriel/Documents"
