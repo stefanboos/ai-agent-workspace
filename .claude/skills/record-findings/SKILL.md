@@ -49,6 +49,23 @@ you understand the scope and the corresponding beads issue.
 
 8. Repeat steps 4-7 for each finding I share with you.
 
+9. After all findings have been recorded, create a follow-up review task as a
+   child of the gate:
+
+   a. Collect all child finding IDs via `bd show <gate-id>`.
+   b. Group them by the files each finding touches (infer from the title).
+      Findings touching the same file or directory go in the same group;
+      within each group order them dependency-first. This minimises the
+      number of times the reviewer opens the same file.
+   c. Create a child task titled:
+      `Human review: verify fixes for <gate-id> findings; invoke /record-findings <gate-id>`
+   d. Set its description to:
+      - "IMPORTANT: This task MUST be executed by the human reviewer, not an AI
+        agent. Invoke `/record-findings <gate-id>` to walk through the fixes."
+      - The grouped finding IDs with one-line title each, in review order.
+      - A separate "Already fixed" section for findings closed during this
+        session (IDs must be retained for traceability even after closure).
+
 ## Gate Lifecycle Rule
 
 **AI agents MUST NOT close a findings gate.** The gate is a human review
