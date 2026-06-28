@@ -73,18 +73,26 @@ you understand the scope and the corresponding beads issue.
      agent, and MUST NOT be closed by an AI agent."
    - "Review procedure — derive everything live; trust no pre-baked list or
      order:"
-     1. List the gate's current children (open **and** closed) via
-        `bd show <gate-id>`. These are the findings to review; ignore this
-        review task itself.
-     2. For each finding, locate its fixing commit(s) with
+     1. List the gate's children (open **and** closed) via `bd show <gate-id>`,
+        then **exclude any already labeled `human-reviewed`** and this review
+        task itself. What remains is the unreviewed set. This is what keeps
+        review rounds from overlapping: findings accepted in an earlier round
+        carry the label and drop out, while findings filed *during* that
+        earlier round are still unlabeled and surface now — so no finding is
+        reviewed twice and none is missed.
+     2. For each finding in the unreviewed set, locate its fixing commit(s) with
         `git log --no-pager --grep=<finding-id>` (the `commit` skill mandates a
         `Refs: <finding-id>` trailer, so every fix is discoverable). A finding
-        with no commit is reviewed as "not yet fixed".
+        with no commit is "not yet fixed" — leave it unlabeled for a later
+        round; do not review it now.
      3. From the files actually changed across those commits, group findings by
         file/area and order them dependency-first — computed in hindsight from
         the real diffs, so the reviewer opens each file once.
-     4. Walk through each finding in that order, confirming each fix. For a
-        rejected fix, file a new child finding under the gate.
+     4. Walk through each finding in that order, confirming each fix. The moment
+        the human accepts **or** rejects a fix, mark that finding reviewed:
+        `bd update <finding-id> --add-label human-reviewed`. For a rejected
+        fix, also file a new child finding under the gate — it stays unlabeled
+        and is reviewed in the next round.
 
 ## Gate Lifecycle Rule
 
