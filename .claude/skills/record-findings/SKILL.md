@@ -49,22 +49,42 @@ you understand the scope and the corresponding beads issue.
 
 8. Repeat steps 4-7 for each finding I share with you.
 
-9. After all findings have been recorded, create a follow-up review task as a
-   child of the gate:
+9. After all findings have been recorded, ensure **exactly one** follow-up
+   review task exists as a child of the gate. If one already exists (an earlier
+   invocation against the same gate left a child whose title starts
+   `Human review:`), update it; otherwise create it.
 
-   a. Collect all child finding IDs via `bd show <gate-id>`.
-   b. Group them by the files each finding touches (infer from the title).
-      Findings touching the same file or directory go in the same group;
-      within each group order them dependency-first. This minimises the
-      number of times the reviewer opens the same file.
-   c. Create a child task titled:
-      `Human review: verify fixes for <gate-id> findings; invoke /record-findings <gate-id>`
-   d. Set its description to:
-      - "IMPORTANT: This task MUST be executed by the human reviewer, not an AI
-        agent. Invoke `/record-findings <gate-id>` to walk through the fixes."
-      - The grouped finding IDs with one-line title each, in review order.
-      - A separate "Already fixed" section for findings closed during this
-        session (IDs must be retained for traceability even after closure).
+   Do **not** bake a finding list or a walkthrough order into this task. Both
+   are derived live at review time. This is deliberate:
+
+   - The list lives authoritatively in the gate's children. A verbatim copy
+     would miss findings filed after this task was created and duplicates a
+     source of truth. `bd show <gate-id>` lists closed children too, so a live
+     query still surfaces findings that were fixed and closed since.
+   - The optimal order depends on which files each *fix* touched and how the
+     fixes depend on each other — knowable only from the commits, in hindsight.
+     Guessing it at filing time bakes in errors.
+
+   Title:
+   `Human review: verify fixes for <gate-id> findings; invoke /record-findings <gate-id>`
+
+   Description (a procedure, not a snapshot):
+   - "IMPORTANT: This task MUST be executed by the human reviewer, not an AI
+     agent, and MUST NOT be closed by an AI agent."
+   - "Review procedure — derive everything live; trust no pre-baked list or
+     order:"
+     1. List the gate's current children (open **and** closed) via
+        `bd show <gate-id>`. These are the findings to review; ignore this
+        review task itself.
+     2. For each finding, locate its fixing commit(s) with
+        `git log --no-pager --grep=<finding-id>` (the `commit` skill mandates a
+        `Refs: <finding-id>` trailer, so every fix is discoverable). A finding
+        with no commit is reviewed as "not yet fixed".
+     3. From the files actually changed across those commits, group findings by
+        file/area and order them dependency-first — computed in hindsight from
+        the real diffs, so the reviewer opens each file once.
+     4. Walk through each finding in that order, confirming each fix. For a
+        rejected fix, file a new child finding under the gate.
 
 ## Gate Lifecycle Rule
 
