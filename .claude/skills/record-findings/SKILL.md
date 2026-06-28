@@ -87,7 +87,15 @@ you understand the scope and the corresponding beads issue.
         round; do not review it now.
      3. From the files actually changed across those commits, group findings by
         file/area and order them dependency-first — computed in hindsight from
-        the real diffs, so the reviewer opens each file once.
+        the real diffs, so the reviewer opens each file once. This is the one
+        analytically hard step. For a large or tangled finding set, delegate it
+        to a high-reasoning, read-only subagent (e.g. an Opus-class model),
+        which returns the grouped, ordered plan. Skip the delegation for a
+        small set — the main thread orders it fine. (Step 9 that *creates* this
+        review task is mechanical and needs no such model; only this review-time
+        analysis does.) Step 4 below stays in the main thread regardless — it is
+        a turn-by-turn dialogue with the reviewer and cannot be delegated to a
+        single-shot subagent.
      4. Walk through each finding in that order, confirming each fix. The moment
         the human accepts **or** rejects a fix, mark that finding reviewed:
         `bd update <finding-id> --add-label human-reviewed`. For a rejected
