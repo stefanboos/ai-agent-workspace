@@ -53,7 +53,7 @@ you understand the scope and the corresponding beads issue.
 
 9. Repeat steps 5-8 for each finding I share with you.
 
-9. After all findings have been recorded, ensure **exactly one** follow-up
+10. After all findings have been recorded, ensure **exactly one** follow-up
    review task exists as a child of the gate. If one already exists (an earlier
    invocation against the same gate left a child whose title starts
    `Human review:`), update it; otherwise create it.
