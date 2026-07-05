@@ -11,5 +11,4 @@ PARENT_DIR=$(dirname "$SCRIPT_DIR")
 REPOSITORIES=(
     #"$PARENT_DIR"
     # "$PARENT_DIR/../hello-world"
-    "$PARENT_DIR/../my-obsidian-vault"
 )
