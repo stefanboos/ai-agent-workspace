@@ -53,6 +53,59 @@ you understand the scope and the corresponding beads issue.
 
 9. Repeat steps 5-8 for each finding I share with you.
 
+10. After all findings have been recorded, ensure **exactly one** follow-up
+   review task exists as a child of the gate. If one already exists (an earlier
+   invocation against the same gate left a child whose title starts
+   `Human review:`), update it; otherwise create it.
+
+   Do **not** bake a finding list or a walkthrough order into this task. Both
+   are derived live at review time. This is deliberate:
+
+   - The list lives authoritatively in the gate's children. A verbatim copy
+     would miss findings filed after this task was created and duplicates a
+     source of truth. `bd show <gate-id>` lists closed children too, so a live
+     query still surfaces findings that were fixed and closed since.
+   - The optimal order depends on which files each *fix* touched and how the
+     fixes depend on each other — knowable only from the commits, in hindsight.
+     Guessing it at filing time bakes in errors.
+
+   Title:
+   `Human review: verify fixes for <gate-id> findings; invoke /record-findings <gate-id>`
+
+   Description (a procedure, not a snapshot):
+   - "IMPORTANT: This task MUST be executed by the human reviewer, not an AI
+     agent, and MUST NOT be closed by an AI agent."
+   - "Review procedure — derive everything live; trust no pre-baked list or
+     order:"
+     1. List the gate's children (open **and** closed) via `bd show <gate-id>`,
+        then **exclude any already labeled `human-reviewed`** and this review
+        task itself. What remains is the unreviewed set. This is what keeps
+        review rounds from overlapping: findings accepted in an earlier round
+        carry the label and drop out, while findings filed *during* that
+        earlier round are still unlabeled and surface now — so no finding is
+        reviewed twice and none is missed.
+     2. For each finding in the unreviewed set, locate its fixing commit(s) with
+        `git log --no-pager --grep=<finding-id>` (the `commit` skill mandates a
+        `Refs: <finding-id>` trailer, so every fix is discoverable). A finding
+        with no commit is "not yet fixed" — leave it unlabeled for a later
+        round; do not review it now.
+     3. From the files actually changed across those commits, group findings by
+        file/area and order them dependency-first — computed in hindsight from
+        the real diffs, so the reviewer opens each file once. This is the one
+        analytically hard step. For a large or tangled finding set, delegate it
+        to a high-reasoning, read-only subagent (e.g. an Opus-class model),
+        which returns the grouped, ordered plan. Skip the delegation for a
+        small set — the main thread orders it fine. (Step 9 that *creates* this
+        review task is mechanical and needs no such model; only this review-time
+        analysis does.) Step 4 below stays in the main thread regardless — it is
+        a turn-by-turn dialogue with the reviewer and cannot be delegated to a
+        single-shot subagent.
+     4. Walk through each finding in that order, confirming each fix. The moment
+        the human accepts **or** rejects a fix, mark that finding reviewed:
+        `bd update <finding-id> --add-label human-reviewed`. For a rejected
+        fix, also file a new child finding under the gate — it stays unlabeled
+        and is reviewed in the next round.
+
 ## Gate Lifecycle Rule
 
 **AI agents MUST NOT close a findings gate.** The gate is a human review
