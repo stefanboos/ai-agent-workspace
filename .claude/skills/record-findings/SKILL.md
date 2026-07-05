@@ -38,16 +38,20 @@ you understand the scope and the corresponding beads issue.
    developing code or for consulting on technical questions in the current
    project, so that you have a solid understanding of the technical context.
 
-4. Ask me for my first finding.
+4. If findings are given by comments in a pull request or by a file, then
+   read them all and sort them such that we can easily discuss them one by one.
 
-5. Give your point of view as a technical expert, and ask me any follow-up
+5. Identify the first finding to discuss. If there are no findings yet, then
+   ask me for my first finding.
+
+6. Give your point of view as a technical expert, and ask me any follow-up
    questions you may have to clarify the finding.
 
-6. Ask me whether to record the finding in the beads gate as a child task.
+7. Ask me whether to record the finding in the beads gate as a child task.
 
-7. If I say yes, create a child task in the beads gate to record the finding.
+8. If I say yes, create a child task in the beads gate to record the finding.
 
-8. Repeat steps 4-7 for each finding I share with you.
+9. Repeat steps 5-8 for each finding I share with you.
 
 9. After all findings have been recorded, ensure **exactly one** follow-up
    review task exists as a child of the gate. If one already exists (an earlier
